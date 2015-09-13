@@ -25,6 +25,7 @@ public class HoloUtil {
                     ItemStack item = convertItem(Static.getArray(line, Target.UNKNOWN));
                     holo.appendItemLine(item);
                 } else {
+                    System.out.println("Generating line: " + line.val());
                     holo.appendTextLine(line.val());
                 }
             }
