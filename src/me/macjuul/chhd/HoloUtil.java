@@ -12,8 +12,7 @@ import com.laytonsmith.core.Static;
 import com.laytonsmith.core.constructs.CArray;
 import com.laytonsmith.core.constructs.Construct;
 import com.laytonsmith.core.constructs.Target;
-import com.laytonsmith.core.exceptions.ConfigRuntimeException;
-import com.laytonsmith.core.functions.Exceptions;
+import com.laytonsmith.core.exceptions.CRE.CRECastException;
 
 public class HoloUtil {
 
@@ -30,8 +29,7 @@ public class HoloUtil {
                     holo.appendTextLine(line.val());
                 }
             }
-        } finally {
-        }
+        } finally {}
     }
 
     public static String generateId() {
@@ -73,8 +71,7 @@ public class HoloUtil {
         int qty = 1;
         short data = 0;
         if(!arr.containsKey("type")) {
-            throw new ConfigRuntimeException("Could not find item type!", Exceptions.ExceptionType.CastException,
-                    Target.UNKNOWN);
+            throw new CRECastException("Could not find item type!", Target.UNKNOWN);
         }
         int id = Integer.valueOf(arr.get("type", t).val()).intValue();
         if(arr.containsKey("data")) {
