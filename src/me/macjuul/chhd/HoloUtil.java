@@ -16,8 +16,9 @@ import com.laytonsmith.core.exceptions.ConfigRuntimeException;
 import com.laytonsmith.core.functions.Exceptions;
 
 public class HoloUtil {
+
     public static void lineGenerator(Hologram holo, Construct text) {
-        if(text instanceof CArray) {
+        try {
             CArray lines = Static.getArray(text, Target.UNKNOWN);
             for(int i = 0; i < lines.size(); i++) {
                 Construct line = lines.get(i, Target.UNKNOWN);
@@ -29,8 +30,7 @@ public class HoloUtil {
                     holo.appendTextLine(line.val());
                 }
             }
-        } else {
-            holo.appendTextLine(text.val());
+        } finally {
         }
     }
 

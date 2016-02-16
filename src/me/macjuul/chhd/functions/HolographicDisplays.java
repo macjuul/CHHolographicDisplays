@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
@@ -45,91 +44,6 @@ public class HolographicDisplays
     public static CommandHelperPlugin getPlugin()
     {
         return CHHD.chp;
-    }
-
-    @api
-    public static class chhd_timed_hologram
-    extends AbstractFunction
-    {
-        public Exceptions.ExceptionType[] thrown()
-        {
-            return new Exceptions.ExceptionType[] { Exceptions.ExceptionType.CastException };
-        }
-
-        public boolean isRestricted()
-        {
-            return true;
-        }
-
-        public Boolean runAsync()
-        {
-            return Boolean.valueOf(false);
-        }
-
-        public Construct exec(Target t, Environment environment, Construct... args)
-                throws ConfigRuntimeException
-        {
-            final HashMap<String, Hologram> hololist = CHHD.plugin.holoMap();
-            String id = null;
-            CArray lines = null;
-            Location loc = null;
-            int ticks = 0;
-            if (Integer.valueOf(args.length).equals(Integer.valueOf(3)))
-            {
-                id = HoloUtil.generateId();
-                loc = HoloUtil.convertLocation(Static.getArray(args[0], t));
-                lines = Static.getArray(args[1], t);
-                ticks = Integer.valueOf(args[2].val()).intValue();
-            }
-            else
-            {
-                id = args[0].val();
-                loc = HoloUtil.convertLocation(Static.getArray(args[1], t));
-                lines = Static.getArray(args[2], t);
-                ticks = Integer.valueOf(args[3].val()).intValue();
-            }
-            if (hololist.containsKey(id)) {
-                throw new ConfigRuntimeException("That hologram ID already exists!", Exceptions.ExceptionType.CastException, t);
-            }
-            final Hologram holo = HologramsAPI.createHologram(HolographicDisplays.getPlugin(), loc);
-            HoloUtil.lineGenerator(holo, lines);
-
-            final String fid = id;
-
-            hololist.put(id, holo);
-            BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-            scheduler.scheduleSyncDelayedTask(HolographicDisplays.getPlugin(), new Runnable()
-            {
-                public void run()
-                {
-                    if (!holo.isDeleted()) {
-                        holo.delete();
-                    }
-                    hololist.remove(fid);
-                }
-            }, Long.valueOf(ticks).longValue());
-            return new CInt(id, t);
-        }
-
-        public String getName()
-        {
-            return "chhd_timed_hologram";
-        }
-
-        public Integer[] numArgs()
-        {
-            return new Integer[] { Integer.valueOf(3), Integer.valueOf(4) };
-        }
-
-        public String docs()
-        {
-            return "String id {[string id], array location, array lines, int ticks} Spawn a hologram at given location for a limited time. Using an id you will be able to remove the hologram at any time.";
-        }
-
-        public Version since()
-        {
-            return CHVersion.V3_3_1;
-        }
     }
 
     @api
@@ -173,11 +87,11 @@ public class HolographicDisplays
             if (hololist.containsKey(id)) {
                 throw new ConfigRuntimeException("That hologram ID already exists!", Exceptions.ExceptionType.CastException, t);
             }
-            Hologram holo = HologramsAPI.createHologram(HolographicDisplays.getPlugin(), loc);
-
-            HoloUtil.lineGenerator(holo, lines);
+            Hologram holo = HologramsAPI.createHologram(CHHD.chp, loc);
 
             hololist.put(id, holo);
+
+            HoloUtil.lineGenerator(holo, lines);
             return new CString(id, t);
         }
 
@@ -500,7 +414,7 @@ public class HolographicDisplays
 
         public String docs()
         {
-            return "void {Int id, Int line, String text} Set a hologram line";
+            return "void {String id, Int line, String text} Set a hologram line";
         }
 
         public Version since()
@@ -785,7 +699,7 @@ public class HolographicDisplays
 
         public String docs()
         {
-            return "void | player array {if | id, null | id, player array} Set or get a holograms visibility. If only id is given, will return an array of players who can see this hologram. If the second argument is null, will reset the holograms visibility (Visible for everyone). If the second argument is a player array the hologram will only be visible to those players.";
+            return "void | player array {id | id, null | id, player array} Set or get a holograms visibility. If only id is given, will return an array of players who can see this hologram. If the second argument is null, will reset the holograms visibility (Visible for everyone). If the second argument is a player array the hologram will only be visible to those players.";
         }
 
         public Version since()
